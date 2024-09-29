@@ -1,0 +1,7 @@
+dist/**
+*.md
+*.yml
+*.yaml
+*.json
+*.html
+out/**

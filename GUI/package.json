@@ -9,6 +9,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^latest"
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "electron": "^32.1.2"
   }
 }
