@@ -1,17 +1,16 @@
-const { FusesPlugin } = require('@electron-forge/plugin-fuses');
-const { FuseV1Options, FuseVersion } = require('@electron/fuses');
+const { FusesPlugin } = require('@electron-forge/plugin-fuses')
+const { FuseV1Options, FuseVersion } = require('@electron/fuses')
 
 module.exports = {
   packagerConfig: {
     asar: true,
-    out: 'dist', // 设置输出目录为dist
   },
   rebuildConfig: {},
   makers: [
     {
       name: '@electron-forge/maker-zip',
-      platforms: ['win32', 'darwin', 'linux']
-    }
+      platforms: ['win32', 'darwin', 'linux'],
+    },
   ],
   plugins: [
     {
@@ -30,4 +29,4 @@ module.exports = {
       [FuseV1Options.OnlyLoadAppFromAsar]: true,
     }),
   ],
-};
+}
