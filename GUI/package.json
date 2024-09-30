@@ -4,12 +4,29 @@
   "description": "solar app gui",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "dev": "cross-env NODE_OPTIONS=--max-old-space-size=8192 node scripts/watch.mjs",
+    "prebuild": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vue-tsc --project packages/renderer/tsconfig.json --noEmit && node scripts/build.mjs",
+    "debug": "cross-env NODE_OPTIONS=--max-old-space-size=8192 npm run prebuild && vite ./packages/renderer",
+    "lint": "cross-env NODE_OPTIONS=--max-old-space-size=8192 eslint --ext .js,.ts,.vue --fix packages/main packages/renderer",
+    "make": "cross-env NODE_OPTIONS=--max-old-space-size=8192 electron-forge make",
+    "start": "cross-env NODE_OPTIONS=--max-old-space-size=8192 electron-forge start",
+    "package": "cross-env NODE_OPTIONS=--max-old-space-size=8192 electron-forge package",
+    "publish": "cross-env NODE_OPTIONS=--max-old-space-size=8192 electron-forge publish",
+    "format": "cross-env NODE_OPTIONS=--max-old-space-size=8192 npx prettier -w ."
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@electron-forge/cli": "^7.5.0",
+    "@electron-forge/maker-zip": "^7.5.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.5.0",
+    "@electron-forge/plugin-fuses": "^7.5.0",
+    "@electron/fuses": "^1.8.0",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "cross-env": "^7.0.3",
     "electron": "^32.1.2"
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.1"
   }
 }
