@@ -1,6 +1,28 @@
-import { app } from 'electron'
+import { BrowserWindow, app } from 'electron'
 import * as path from 'path'
 
-app.on('ready', () => {
-  require(path.join(__dirname, 'main.js'))
+function createWindow() {
+  const mainWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'), // todo change the preload
+    },
+  })
+
+  mainWindow.loadFile(path.join(__dirname, 'index.html')) // todo not working
+}
+
+app.whenReady().then(createWindow)
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
+})
+
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow()
+  }
 })

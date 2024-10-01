@@ -2,7 +2,7 @@
   "name": "gui",
   "version": "1.0.0",
   "description": "solar app gui",
-  "main": "main.js",
+  "main": "dist/main/index.cjs",
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=--max-old-space-size=8192 node scripts/watch.mjs",
     "prebuild": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vue-tsc --project packages/renderer/tsconfig.json --noEmit && node scripts/build.mjs",
