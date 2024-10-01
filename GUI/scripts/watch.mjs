@@ -1,18 +1,62 @@
-import { build } from 'vite'
-import { createServer } from 'vite'
+import { spawn } from 'child_process'
+import electron from 'electron'
+import { build, createServer } from 'vite'
+import path from 'path'
+import fs from 'fs-extra'
+import { fileURLToPath } from 'url';
+
+
+let aliveInst = 0
+let quitTimer = null
+
+function startQuit() {
+  quitTimer = setTimeout(() => {
+    process.exit(0)
+  }, 5000)
+}
+
+function stopQuit() {
+  if (quitTimer) {
+    clearTimeout(quitTimer)
+    quitTimer = null
+  }
+}
 
 /**
- * 启动 Vite 开发服务器
+ * @type {(server: import('vite').ViteDevServer) => Promise<import('rollup').RollupWatcher>}
  */
-async function startViteServer() {
-  const server = await createServer({
-    configFile: 'packages/renderer/vite.config.ts',
+function watchMain(server) {
+  /**
+   * @type {import('child_process').ChildProcessWithoutNullStreams | null}
+   */
+  let electronProcess = null
+  const address = server.httpServer.address()
+  const env = Object.assign(process.env, {
+    VITE_DEV_SERVER_HOST: address.address,
+    VITE_DEV_SERVER_PORT: address.port,
+  })
+
+  return build({
+    configFile: 'packages/main/vite.config.ts',
     mode: 'development',
     plugins: [
       {
-        name: 'electron-preload-watcher',
+        name: 'electron-main-watcher',
         writeBundle() {
-          server.ws.send({ type: 'full-reload' })
+          stopQuit()
+          aliveInst += 1
+          electronProcess && electronProcess.kill()
+          electronProcess = spawn(electron, ['.', '--inspect'], {
+            stdio: 'inherit',
+            env,
+          })
+          electronProcess.on('exit', () => {
+            aliveInst -= 1
+            if (aliveInst === 0) {
+              startQuit()
+            }
+          })
+
         },
       },
     ],
@@ -20,13 +64,9 @@ async function startViteServer() {
       watch: true,
     },
   })
-
-  await server.listen()
-  console.log('Vite server is running...')
 }
 
 /**
- * 监视 Electron 预加载脚本的变化
  * @type {(server: import('vite').ViteDevServer) => Promise<import('rollup').RollupWatcher>}
  */
 function watchPreload(server) {
@@ -47,7 +87,11 @@ function watchPreload(server) {
   })
 }
 
-// 启动 Vite 服务器并监视预加载脚本
-startViteServer().then(server => {
-  watchPreload(server)
+// bootstrap
+const server = await createServer({
+  configFile: 'packages/renderer/vite.config.ts',
 })
+
+await server.listen()
+await watchPreload(server)
+await watchMain(server)
