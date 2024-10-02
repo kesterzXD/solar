@@ -10,7 +10,7 @@ function createWindow() {
     },
   })
 
-  mainWindow.loadFile(path.join(__dirname, 'index.html')) // todo not working
+  // mainWindow.loadFile(path.join(__dirname, 'index.html')) // todo not working
 }
 
 app.whenReady().then(createWindow)
