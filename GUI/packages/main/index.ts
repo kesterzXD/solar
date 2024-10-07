@@ -5,12 +5,12 @@ function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    autoHideMenuBar: true,
+    alwaysOnTop: true,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'), // todo change the preload
+      preload: path.join(__dirname, '../preload/index.cjs'),
     },
   })
-
-  // mainWindow.loadFile(path.join(__dirname, 'index.html')) // todo not working
 }
 
 app.whenReady().then(createWindow)
